@@ -16,10 +16,22 @@
 <!-- Set before first paint, so the pre-animation state is never shown.
      Doing this from main.js at the end of body lets content flash in first. -->
 <script>document.documentElement.classList.add('js');</script>
+
+<!-- js/webgl-hero.js and js/webgl-network.js are optional enhancement layers
+     — every WebGL feature on this page has a complete, working CSS/DOM/SVG
+     version underneath it, so a browser without module or WebGL support
+     just never loads three and shows that version instead. -->
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
 </head>
 <body>
 
 <a class="skip" href="#family">Skip to the models</a>
+
+<!-- Custom cursor: built and shown only by js/cursor.js, only for a mouse
+     with real hover. Empty here so nothing renders without JS. -->
+<div class="cursor" id="cursor" hidden aria-hidden="true"><span class="cursor__ring"></span></div>
 
 <!-- ─────────────────────────────  HERO  ───────────────────────────── -->
 <header class="hero" id="top">
@@ -73,7 +85,7 @@
     to end up inside Gzowo AI.
   </p>
 
-  <ol class="principles">
+  <ol class="principles" id="principles">
     <li data-reveal>
       <h3>Own every layer</h3>
       <p>
@@ -99,6 +111,47 @@
       </p>
     </li>
   </ol>
+</section>
+
+<!-- ─────────────────────────────  WHERE IT'S HEADING  ─────────────────────
+     Visualises the third principle above. The dashed lines are a plan, not
+     a status — nothing here claims MicroG or Gedit already power Gzowo AI,
+     because they don't yet. Static SVG lines + DOM plates are the complete,
+     honest version; js/webgl-network.js only adds tilting 3D cards and a
+     couple of travelling "intent" pulses on top when it can.
+-->
+<section class="section network" id="network">
+  <p class="eyebrow" data-reveal>Where it's heading</p>
+  <h2 class="statement statement--sm" data-reveal>
+    Two models,<br>one destination.
+  </h2>
+  <p class="lede" data-reveal>
+    MicroG and Gedit are not meant to stay separate demos. Both are built to end up inside
+    Gzowo AI — MicroG as its voice, Gedit as its eyes. Neither has landed there yet.
+  </p>
+
+  <div class="network__stage" data-reveal data-network-stage>
+    <canvas class="network__canvas" id="networkCanvas" aria-hidden="true"></canvas>
+    <div class="network__fallback" id="networkFallback">
+      <svg class="network__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d="M18,25 C55,25 45,50 78,50" data-flow-a/>
+        <path d="M18,75 C55,75 45,50 78,50" data-flow-b/>
+      </svg>
+      <div class="network__node" style="--x:18%; --y:25%;">
+        <span class="plate network__mark"><img src="assets/icons/microg-icon.svg" alt="MicroG icon" width="512" height="512"></span>
+        <p class="network__label">MicroG</p>
+      </div>
+      <div class="network__node" style="--x:18%; --y:75%;">
+        <span class="plate network__mark"><img src="assets/icons/gedit-icon.svg" alt="Gedit icon" width="512" height="512"></span>
+        <p class="network__label">Gedit</p>
+      </div>
+      <div class="network__node network__node--hub" style="--x:78%; --y:50%;">
+        <span class="plate network__mark"><img src="assets/icons/gzowo-ai-icon.svg" alt="Gzowo AI icon" width="512" height="512"></span>
+        <p class="network__label">Gzowo AI</p>
+      </div>
+    </div>
+  </div>
+  <p class="network__note" data-reveal>Dashed = planned, not live. Nothing here claims a connection that doesn't exist yet.</p>
 </section>
 
 <!-- ─────────────────────────────  ONE GRID  ─────────────────────────────
@@ -230,6 +283,21 @@
     </div>
 
     <p class="footnote">At a 1024-token context, that is roughly twice as much Polish text in the same window.</p>
+
+    <div class="tok__try">
+      <label class="tok__try-label" for="tokDemoInput">Try your own sentence</label>
+      <input class="tok__try-input" id="tokDemoInput" type="text" value="Najmniejszy wspólny mianownik" spellcheck="false" autocomplete="off" maxlength="80">
+      <p class="tok__try-note">Illustrative simulation, not a live model — it approximates the pattern from the measured example above.</p>
+
+      <div class="tok__row">
+        <p class="tok__who">Ours <span id="tokDemoOursCount">6 tokens</span></p>
+        <p class="tok__chips" id="tokDemoOurs"></p>
+      </div>
+      <div class="tok__row">
+        <p class="tok__who">GPT-2 <span id="tokDemoGptCount">15 tokens</span></p>
+        <p class="tok__chips" id="tokDemoGpt"></p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -245,5 +313,9 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
 <script src="js/models-data.js"></script>
 <script src="js/main.js"></script>
+<script src="js/cursor.js"></script>
+<script src="js/token-demo.js"></script>
+<script type="module" src="js/webgl-hero.js"></script>
+<script type="module" src="js/webgl-network.js"></script>
 </body>
 </html>

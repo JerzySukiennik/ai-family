@@ -92,10 +92,22 @@
   const spin = { angle: 0 };
   let radii = { rx: 0, ry: 0 };
 
+  /* Read by js/webgl-hero.js, one plain object per item, updated in place()
+     below. This is the same "single source of truth" pattern as models-data.js:
+     the WebGL layer never re-derives the orbit math, it just reads the numbers
+     GSAP already computed this frame — no DOM-transform parsing, no drift
+     between the CSS orbit and its 3D mirror. */
+  const orbitState = items.map(() => ({ x: 0, y: 0, scale: 1, opacity: 1, size: 0 }));
+  window.AIFamilyOrbit = { items, state: orbitState };
+
   function measure() {
     const r = orbit.getBoundingClientRect();
     // Matches the ellipse in the markup: rx 380/1000, ry 84/300 of the box.
     radii = { rx: r.width * 0.38, ry: r.height * 0.28 };
+    // Cached here rather than read every animation frame — offsetWidth only
+    // changes on resize (the CSS size is a clamp()), so there is no reason
+    // to risk a forced layout read 60 times a second.
+    items.forEach((el, i) => (orbitState[i].size = el.offsetWidth));
   }
 
   /* Per-item hover weight, 0..1. It is blended inside place() rather than
@@ -111,18 +123,24 @@
       const b = boost[i].v;
       const restScale = 0.62 + depth * 0.38;
       const restAlpha = 0.38 + depth * 0.62;
+      const x = Math.sin(a) * radii.rx;
+      const y = Math.cos(a) * radii.ry;
+      // Hovering pulls an item all the way to the front, wherever it sits on
+      // the orbit — interpolating to a fixed size rather than multiplying the
+      // depth size, so a back item does not stay small while it is selected.
+      const scale = restScale + (1.08 - restScale) * b;
+      const opacity = restAlpha + (1 - restAlpha) * b;
       gsap.set(el, {
         xPercent: -50,
         yPercent: -50,
-        x: Math.sin(a) * radii.rx,
-        y: Math.cos(a) * radii.ry,
-        // Hovering pulls an item all the way to the front, wherever it sits on
-        // the orbit — interpolating to a fixed size rather than multiplying the
-        // depth size, so a back item does not stay small while it is selected.
-        scale: restScale + (1.08 - restScale) * b,
-        opacity: restAlpha + (1 - restAlpha) * b,
+        x,
+        y,
+        scale,
+        opacity,
         zIndex: Math.round(depth * 100) + (b > 0.5 ? 200 : 0),
       });
+      const s = orbitState[i];
+      s.x = x; s.y = y; s.scale = scale; s.opacity = opacity;
     });
   }
 
@@ -284,6 +302,40 @@
         );
       });
 
+      /* Hero exit parallax: the headline and orbit ease up and fade as the
+         point section arrives underneath, so the transition between the two
+         reads as one continuous scroll rather than a hard cut. Scrubbed, not
+         timed — it tracks the scrollbar directly. */
+      if (motion) {
+        gsap.to('.hero__inner', {
+          yPercent: -12,
+          opacity: 0.15,
+          ease: 'none',
+          scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+        });
+      }
+
+      /* The three principles get a scroll-scrubbed progress rail instead of
+         a plain once-off fade: --rail-progress tracks how far through the
+         list the reader is, and the current item's heading darkens. Reused
+         is-current toggling means keyboard/reduced-motion users still get a
+         correct (if static) state at rest. */
+      const principles = document.getElementById('principles');
+      if (principles) {
+        const rows = gsap.utils.toArray('li', principles);
+        ScrollTrigger.create({
+          trigger: principles,
+          start: 'top 65%',
+          end: 'bottom 65%',
+          scrub: motion ? 0.3 : false,
+          onUpdate: (self) => {
+            principles.style.setProperty('--rail-progress', self.progress.toFixed(4));
+            const idx = Math.min(rows.length - 1, Math.floor(self.progress * rows.length));
+            rows.forEach((li, i) => li.classList.toggle('is-current', i === idx));
+          },
+        });
+      }
+
       /* Blueprint: the guides sweep across, then the marks draw themselves.
          This is the one place the page is allowed to show off. */
       const bp = document.querySelector('[data-blueprint]');
@@ -308,14 +360,41 @@
           gsap.set(guides, { scaleX: 0, transformOrigin: 'left center' });
           gsap.set([fills, '.bp-label text', '.bp-caption text'], { opacity: 0 });
 
+          // Scrubbed to the scrollbar rather than played once: this is a
+          // technical drawing, so it reads naturally as something that
+          // unfolds under your hand as you scroll, and — unlike prose —
+          // nothing is lost if a reader scrubs back and forth over it.
           gsap
-            .timeline({ scrollTrigger: { trigger: bp, start: 'top 78%', once: true } })
-            .to(guides, { scaleX: 1, duration: 0.9, stagger: 0.1, ease: 'power2.inOut' })
+            .timeline({
+              scrollTrigger: { trigger: bp, start: 'top 80%', end: 'bottom 55%', scrub: 0.4 },
+            })
+            .to(guides, { scaleX: 1, duration: 0.9, stagger: 0.1, ease: 'none' })
             .to('.bp-label text', { opacity: 1, duration: 0.4, stagger: 0.06 }, '-=0.45')
-            .to(strokes, { strokeDashoffset: 0, duration: 1.1, stagger: 0.05, ease: 'power2.inOut' }, '-=0.3')
+            .to(strokes, { strokeDashoffset: 0, duration: 1.1, stagger: 0.05, ease: 'none' }, '-=0.3')
             .to(fills, { opacity: 1, duration: 0.35 }, '-=0.35')
             .to('.bp-caption text', { opacity: 1, duration: 0.4, stagger: 0.08 }, '-=0.5');
         }
+      }
+
+      /* Model sections: the sticky mark drifts a little slower than the
+         facts scrolling past it, a small parallax that keeps the pinned
+         icon feeling like it is sitting in real space rather than glued
+         to the viewport. */
+      if (motion) {
+        gsap.utils.toArray('.model').forEach((section) => {
+          const mark = section.querySelector('.model__mark');
+          if (!mark) return;
+          gsap.fromTo(
+            mark,
+            { y: -24, rotate: -1.5 },
+            {
+              y: 24,
+              rotate: 1.5,
+              ease: 'none',
+              scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
+            }
+          );
+        });
       }
 
       /* Parameter count. Watching it land on an exact, odd number is the
