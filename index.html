@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meet Our Family Of AI Models</title>
+<meta name="description" content="A family of AI models built from scratch — Gzowo AI, MicroG and Gedit. Own tokenizer, own architecture, own training loop. Open source.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="assets/icons/microg-icon.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Set before first paint, so the pre-animation state is never shown.
+     Doing this from main.js at the end of body lets content flash in first. -->
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<a class="skip" href="#family">Skip to the models</a>
+
+<!-- ─────────────────────────────  HERO  ───────────────────────────── -->
+<header class="hero" id="top">
+  <div class="hero__inner">
+    <p class="eyebrow reveal" data-reveal>Three projects · one grid · open source</p>
+
+    <h1 class="display">
+      <span class="line"><span>Meet Our Family</span></span>
+      <span class="line"><span>Of AI Models</span></span>
+    </h1>
+
+    <!-- The orbit. Items are generated from window.MODELS. -->
+    <div class="orbit" id="orbit" aria-label="The models">
+      <!-- preserveAspectRatio="none" so the ellipse maps exactly onto the box
+           the JS measures: rx 380/1000 and ry 84/300 of it. non-scaling-stroke
+           keeps the hairline at 1px despite the stretch. -->
+      <svg class="orbit__ring" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <ellipse cx="500" cy="150" rx="380" ry="84" />
+      </svg>
+      <div class="orbit__stage" id="orbitStage"></div>
+    </div>
+
+    <!-- One readout slot, swapped on hover. Calmer than a floating tooltip,
+         and it still works when there is no pointer to hover with. -->
+    <div class="readout" id="readout" aria-live="polite">
+      <p class="readout__hint" id="readoutHint">Hover a model</p>
+      <div class="readout__card" id="readoutCard" hidden>
+        <p class="readout__name" id="readoutName"></p>
+        <p class="readout__tagline" id="readoutTagline"></p>
+        <p class="badge" id="readoutStatus"></p>
+      </div>
+    </div>
+  </div>
+
+  <p class="scrollcue" aria-hidden="true">Scroll</p>
+</header>
+
+<main>
+
+<!-- ─────────────────────────────  THE POINT  ───────────────────────────── -->
+<section class="section point" id="point">
+  <p class="eyebrow" data-reveal>The point</p>
+
+  <h2 class="statement" data-reveal>
+    Nothing here is<br>a wrapper.
+  </h2>
+
+  <p class="lede" data-reveal>
+    The tokenizer, the architecture, the training loop, the inference — written from scratch
+    and measured, not assumed. Each model is built to run on ordinary hardware, offline, and
+    to end up inside Gzowo AI.
+  </p>
+
+  <ol class="principles">
+    <li data-reveal>
+      <h3>Own every layer</h3>
+      <p>
+        No fine-tuning of someone else’s weights. The tokenizer, the model, the training loop and the
+        inference are ours, and legible all the way down. You can open the network while it runs and
+        watch the attention fire.
+      </p>
+    </li>
+    <li data-reveal>
+      <h3>Measured, not assumed</h3>
+      <p>
+        Every claim on this page has a number behind it — or it says plainly that it does not have one yet.
+        A model that has been specified is labelled a spec. A model that has been written but not trained
+        says so. The badges are not decoration.
+      </p>
+    </li>
+    <li data-reveal>
+      <h3>Local, and heading home</h3>
+      <p>
+        Every model runs on the machine in front of you and lands inside Gzowo AI, the assistant they all
+        report to. Today that assistant still leans on a hosted model for its voice. MicroG and Gedit are
+        how that stops being true.
+      </p>
+    </li>
+  </ol>
+</section>
+
+<!-- ─────────────────────────────  ONE GRID  ─────────────────────────────
+     The marks are not styled to match. They are drawn on the same
+     construction grid, and the numbers below are the real ones from the
+     source files. The hairlines draw themselves in on scroll.
+-->
+<section class="section grid-proof" id="grid">
+  <p class="eyebrow" data-reveal>Why they look related</p>
+  <h2 class="statement statement--sm" data-reveal>
+    One family,<br>one grid.
+  </h2>
+  <p class="lede" data-reveal>
+    The three marks share a stroke weight, a baseline, an x-height and a descender. The G is not
+    redrawn for each model — it is literally the same path, at the same radius, in the same place.
+    Only the left glyph changes: µ for micro, a crop-mark for edit, an aperture for the assistant.
+  </p>
+
+  <div class="blueprint" data-blueprint>
+    <svg viewBox="0 0 1010 260" role="img" aria-labelledby="bpTitle">
+      <title id="bpTitle">The three marks drawn on their shared construction grid</title>
+
+      <!-- shared guides: y values are the real ones from the mark sources, +11
+           for the wrapper shift. They start at x=150 so the measurement labels
+           get their own gutter and never sit on top of a glyph. -->
+      <g class="bp-guide" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke">
+        <line x1="150" y1="85"  x2="995" y2="85"  data-guide/>
+        <line x1="150" y1="151" x2="995" y2="151" data-guide/>
+        <line x1="150" y1="183" x2="995" y2="183" data-guide/>
+      </g>
+      <g class="bp-label">
+        <text x="16" y="89">x-height 74</text>
+        <text x="16" y="155">baseline 140</text>
+        <text x="16" y="187">descender 172</text>
+      </g>
+
+      <!-- three marks, same coordinate system, shifted on x only -->
+      <g class="bp-marks" fill="none" stroke="currentColor" stroke-width="15"
+         stroke-linecap="butt" stroke-linejoin="round" transform="translate(0,11)">
+        <g transform="translate(120,0)" data-mark>
+          <circle cx="96" cy="123" r="38"/>
+          <circle cx="96" cy="123" r="9" fill="currentColor" stroke="none"/>
+          <path d="M243 62 a50 50 0 1 0 0 56 V90 H200"/>
+        </g>
+        <g transform="translate(405,0)" data-mark>
+          <path d="M60 74 L60 172"/>
+          <path d="M60 104 Q60 140 96 140 Q132 140 132 104 L132 74"/>
+          <path d="M243 62 a50 50 0 1 0 0 56 V90 H200"/>
+        </g>
+        <g transform="translate(690,0)" data-mark>
+          <path d="M60 104 L60 74 L96 74"/>
+          <path d="M132 142 L132 172 L96 172"/>
+          <path d="M243 62 a50 50 0 1 0 0 56 V90 H200"/>
+        </g>
+      </g>
+
+      <g class="bp-caption">
+        <text x="165" y="243">GZOWO AI</text>
+        <text x="450" y="243">MICROG</text>
+        <text x="735" y="243">GEDIT</text>
+      </g>
+    </svg>
+  </div>
+
+  <p class="footnote" data-reveal>Stroke weight 15 · G centre 200,90 · radius 50 — identical in all three.</p>
+</section>
+
+<!-- ─────────────────────────────  MODELS  ─────────────────────────────
+     Generated from window.MODELS.
+-->
+<div id="family"></div>
+
+<!-- ─────────────────────────────  BENCHMARKS  ─────────────────────────────
+     Only MicroG has measured numbers, so only MicroG gets this section.
+     The other two would need placeholders, and a placeholder benchmark is
+     worse than no benchmark.
+-->
+<section class="section bench" id="benchmarks">
+  <p class="eyebrow" data-reveal>Benchmarks · MicroG</p>
+  <h2 class="statement statement--sm" data-reveal>
+    Every claim<br>has a number.
+  </h2>
+
+  <div class="bench__grid">
+    <div class="stat" data-reveal>
+      <p class="stat__value"><span data-count="109529856">109,529,856</span></p>
+      <p class="stat__label">Parameters — counted, not rounded</p>
+    </div>
+    <div class="stat" data-reveal>
+      <p class="stat__value">8.95<span class="stat__unit">×</span></p>
+      <p class="stat__label">Faster with the KV-cache at a 900-token context — 1.4 → 12.1 tok/s</p>
+    </div>
+    <div class="stat" data-reveal>
+      <p class="stat__value">10.55<span class="stat__unit"> / 10.37</span></p>
+      <p class="stat__label">Loss at random init vs ln(32000). Lower would mean a target leak, not success</p>
+    </div>
+    <div class="stat" data-reveal>
+      <p class="stat__value">4.37</p>
+      <p class="stat__label">Characters per token on Polish</p>
+    </div>
+    <div class="stat" data-reveal>
+      <p class="stat__value">1.79<span class="stat__unit">e-06</span></p>
+      <p class="stat__label">Max logit delta, KV-cache vs none — identical sampled sequences</p>
+    </div>
+    <div class="stat" data-reveal>
+      <p class="stat__value">26–60<span class="stat__unit">%</span></p>
+      <p class="stat__label">Fewer tokens than GPT-2’s tokenizer across ordinary Polish sentences</p>
+    </div>
+  </div>
+
+  <!-- The tokenizer comparison is the most legible thing in the whole project.
+       Showing the actual split beats describing it. -->
+  <div class="tok" data-reveal>
+    <h3 class="tok__head">Why a Polish tokenizer was worth building</h3>
+    <p class="tok__sub">The same phrase, split by each tokenizer. Every chip is one token.</p>
+
+    <div class="tok__row">
+      <p class="tok__who">Ours <span>6 tokens</span></p>
+      <p class="tok__chips" data-chips>
+        <span>Naj</span><span>mniej</span><span>szy</span><span>wspólny</span><span>mianow</span><span>nik</span>
+      </p>
+    </div>
+
+    <div class="tok__row">
+      <p class="tok__who">GPT-2 <span>15 tokens</span></p>
+      <p class="tok__chips" data-chips>
+        <span>N</span><span>aj</span><span>mn</span><span>ie</span><span>js</span><span>zy</span><span>w</span><span>sp</span><span>ó</span><span>l</span><span>ny</span><span>m</span><span>ian</span><span>own</span><span>…</span>
+      </p>
+    </div>
+
+    <p class="footnote">At a 1024-token context, that is roughly twice as much Polish text in the same window.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <p class="footer__line">Built in Gzowo and Warsaw. Everything here is open source.</p>
+  <ul class="footer__links" id="footerLinks"></ul>
+  <p class="footer__meta">MIT licensed · <a href="https://github.com/JerzySukiennik">github.com/JerzySukiennik</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="js/models-data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
